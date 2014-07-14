@@ -27,6 +27,34 @@ namespace richinni.Migrations
             //  new Person { FullName = "Rowan Miller" }
             //);
             //
+            this.AddUserAndRoles();
+        }
+
+         bool AddUserAndRoles()
+        {
+            bool success = false;
+            var idManager = new IdentityManager();
+            success = idManager.CreateRole("Admin");
+            if (!success == true) return success;
+                success = idManager.CreateRole("CanEdit");
+            if (!success == true) return success;
+                success = idManager.CreateRole("User");
+            if (!success) return success;
+                var newUser = new ApplicationUser()
+                {
+                    UserName = "ynic",
+                    Email = "ynic@tw.pwc.com"
+                };
+            success = idManager.CreateUser(newUser, "reserved");
+
+            if (!success) return success;
+                success = idManager.AddUserToRole(newUser.Id, "Admin");
+            if (!success) return success;
+                success = idManager.AddUserToRole(newUser.Id, "CanEdit");
+            if (!success) return success;
+                success = idManager.AddUserToRole(newUser.Id, "User");
+            if (!success) return success;
+                return success;
         }
     }
 }

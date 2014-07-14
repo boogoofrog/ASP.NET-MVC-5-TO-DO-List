@@ -1,0 +1,39 @@
+﻿@model IEnumerable<richinni.Models.EditUserViewModel>
+
+@{
+    ViewBag.Title = "帳號管理";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("新增帳號", "Register")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.ActionLink("編輯", "Edit", new { id=item.UserName  }) |
+            @Html.ActionLink("角色", "UserRoles", new { id = item.UserName }) |
+            @Html.ActionLink("刪除", "Delete", new { id = item.UserName })
+        </td>
+    </tr>
+}
+
+</table>

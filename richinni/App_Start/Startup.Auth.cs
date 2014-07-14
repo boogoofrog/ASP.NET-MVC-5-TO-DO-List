@@ -28,11 +28,13 @@ namespace richinni
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+               appId: "1420539211550204",
+               appSecret: "00d7182e1f09ca08fa603e0787f211c7");
 
-            //app.UseGoogleAuthentication();
+            app.UseGoogleAuthentication(
+                clientId: "943487460738-bkdaiveps0rpq2u5v5fdbn099khnmsnh.apps.googleusercontent.com",
+                clientSecret: "PT9QXKMr6sNWVeqf6Dyzv_Gg");
         }
     }
 }

@@ -7,31 +7,49 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using richinni.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Threading.Tasks;
 
 namespace richinni.Controllers
 {
     [RequireHttps]
+    [Authorize]
     public class ToDoController : Controller
-    {
+    {        
         private ApplicationDbContext db = new ApplicationDbContext();
+        private UserManager<ApplicationUser> manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
 
         // GET: /ToDo/
         public ActionResult Index()
         {
-            return View(db.ToDoes.ToList());
+            var currentUser = manager.FindById(User.Identity.GetUserId());
+            return View(db.ToDoes.ToList().Where(t => t.User.Id == currentUser.Id));         
+        }
+
+        [Authorize(Roles = "Admin")]
+        // 管理者可以看所有人的資料
+        public async Task<ActionResult> All()
+        {
+            return View(await db.ToDoes.ToListAsync());
         }
 
         // GET: /ToDo/Details/5
-        public ActionResult Details(int? id)
+        public async Task<ActionResult> Details(int? id)
         {
+            var currentUser = await manager.FindByIdAsync(User.Identity.GetUserId());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ToDo todo = db.ToDoes.Find(id);
+            ToDo todo = await db.ToDoes.FindAsync(id);
             if (todo == null)
             {
                 return HttpNotFound();
+            }
+            if (todo.User.Id != currentUser.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
             return View(todo);
         }
@@ -47,29 +65,35 @@ namespace richinni.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="Id,Description,IsDone")] ToDo todo)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Description,IsDone")] ToDo todo)
         {
+            var currentUser = await db.Users.FirstAsync(m => m.UserName == User.Identity.Name);
             if (ModelState.IsValid)
             {
+                todo.User = currentUser;
                 db.ToDoes.Add(todo);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-
             return View(todo);
         }
 
         // GET: /ToDo/Edit/5
-        public ActionResult Edit(int? id)
+        public async Task<ActionResult> Edit(int? id)
         {
+            var currentUser = await manager.FindByIdAsync(User.Identity.GetUserId()); 
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ToDo todo = db.ToDoes.Find(id);
+            ToDo todo = await db.ToDoes.FindAsync(id);
             if (todo == null)
             {
                 return HttpNotFound();
+            }
+            if (todo.User.Id != currentUser.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
             return View(todo);
         }
@@ -79,28 +103,33 @@ namespace richinni.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="Id,Description,IsDone")] ToDo todo)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Description,IsDone")] ToDo todo)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(todo).State = EntityState.Modified;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(todo);
         }
 
         // GET: /ToDo/Delete/5
-        public ActionResult Delete(int? id)
+        public async Task<ActionResult> Delete(int? id)
         {
+            var currentUser = await manager.FindByIdAsync(User.Identity.GetUserId());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ToDo todo = db.ToDoes.Find(id);
+            ToDo todo = await db.ToDoes.FindAsync(id);
             if (todo == null)
             {
                 return HttpNotFound();
+            }
+            if (todo.User.Id != currentUser.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
             return View(todo);
         }
@@ -108,11 +137,11 @@ namespace richinni.Controllers
         // POST: /ToDo/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
             ToDo todo = db.ToDoes.Find(id);
             db.ToDoes.Remove(todo);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
