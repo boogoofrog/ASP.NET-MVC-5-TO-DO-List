@@ -100,6 +100,7 @@ namespace richinni.Models
         public string Email { get; set; }
     }
 
+    //被選擇的使用者的角色。
     public class SelectUserRolesViewModel
     {
         public SelectUserRolesViewModel()
@@ -107,7 +108,6 @@ namespace richinni.Models
             this.Roles = new List<SelectRoleEditorViewModel>();
         }
 
-        // Enable initialization with an instance of ApplicationUser:
         public SelectUserRolesViewModel(ApplicationUser user)
             : this()
         {
@@ -135,10 +135,7 @@ namespace richinni.Models
         public List<SelectRoleEditorViewModel> Roles { get; set; }
     }
 
-
-
-    // Used to display a single role with a checkbox, within a list structure:
-
+    //使用者-角色Model，包含角色名稱及是否選擇。
     public class SelectRoleEditorViewModel
     {
         public SelectRoleEditorViewModel() { }
@@ -146,7 +143,14 @@ namespace richinni.Models
         {
             this.RoleName = role.Name;
         }
+
+        /// <summary>
+        /// 是否被選擇。
+        /// </summary>
         public bool Selected { get; set; }
+        /// <summary>
+        /// 角色名稱。
+        /// </summary>
         [Required]
         public string RoleName { get; set; }
     }

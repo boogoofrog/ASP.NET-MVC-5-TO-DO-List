@@ -10,20 +10,34 @@ using richinni.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Threading.Tasks;
+using richinni.Models.Repositorys;
 
 namespace richinni.Controllers
 {
     [RequireHttps]
     [Authorize]
     public class ToDoController : Controller
-    {        
+    {
         private ApplicationDbContext db = new ApplicationDbContext();
         private UserManager<ApplicationUser> manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
 
+        private IToDoRepository theToDo;
+
+        ToDoController()
+        {
+            theToDo = new ToDoRepository();
+        }
+
+        ToDoController(IToDoRepository t)
+        {
+            theToDo = t;
+        }
+
         // GET: /ToDo/
         public ActionResult Index()
-        {
+        {            
             var currentUser = manager.FindById(User.Identity.GetUserId());
+            //return View(theToDo.GetByUser(currentUser));
             return View(db.ToDoes.ToList().Where(t => t.User.Id == currentUser.Id));         
         }
 

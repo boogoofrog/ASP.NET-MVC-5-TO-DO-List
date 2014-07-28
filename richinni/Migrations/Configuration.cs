@@ -1,4 +1,4 @@
-namespace richinni.Migrations
+﻿namespace richinni.Migrations
 {
     using System;
     using System.Data.Entity;
@@ -26,19 +26,25 @@ namespace richinni.Migrations
             //  new Person { FullName = "Brice Lambson" },
             //  new Person { FullName = "Rowan Miller" }
             //);
-            //
+            
+            //新增帳號和角色
             this.AddUserAndRoles();
         }
 
+        //新增帳號和角色
          bool AddUserAndRoles()
         {
             bool success = false;
+
             var idManager = new IdentityManager();
-            success = idManager.CreateRole("Admin");
+            if (!idManager.RoleExists("管理者"))
+                success = idManager.CreateRole("管理者");
             if (!success == true) return success;
-                success = idManager.CreateRole("CanEdit");
+            if (!idManager.RoleExists("使用者"))
+                success = idManager.CreateRole("使用者");
             if (!success == true) return success;
-                success = idManager.CreateRole("User");
+            if (!idManager.RoleExists("閱覽者"))
+                success = idManager.CreateRole("閱覽者");
             if (!success) return success;
                 var newUser = new ApplicationUser()
                 {
@@ -48,11 +54,11 @@ namespace richinni.Migrations
             success = idManager.CreateUser(newUser, "reserved");
 
             if (!success) return success;
-                success = idManager.AddUserToRole(newUser.Id, "Admin");
+            success = idManager.AddUserToRole(newUser.Id, "管理者");
             if (!success) return success;
-                success = idManager.AddUserToRole(newUser.Id, "CanEdit");
+            success = idManager.AddUserToRole(newUser.Id, "使用者");
             if (!success) return success;
-                success = idManager.AddUserToRole(newUser.Id, "User");
+            success = idManager.AddUserToRole(newUser.Id, "閱覽者");
             if (!success) return success;
                 return success;
         }

@@ -119,10 +119,10 @@ namespace richinni.Controllers
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-                : message == ManageMessageId.Error ? "An error has occurred."
+                message == ManageMessageId.ChangePasswordSuccess ? "您的密碼已變更。"
+                : message == ManageMessageId.SetPasswordSuccess ? "已設定您的密碼。"
+                : message == ManageMessageId.RemoveLoginSuccess ? "已移除外部登入。"
+                : message == ManageMessageId.Error ? "發生錯誤。"
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -385,7 +385,7 @@ namespace richinni.Controllers
             return RedirectToAction("Index");
         }
 
-        // GEG: /Account/UserRoles
+        // GET: /Account/UserRoles
         [Authorize(Roles = "Admin")]
         public ActionResult UserRoles(string id)
         {
